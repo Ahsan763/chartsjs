@@ -1,0 +1,34 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body{
+  background-color: #000;
+}
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.mapSection{
+  padding: 100px 0 170px 0;
+}
+
+@media(max-width:1199px){
+  .container {
+    max-width: 768px;
+  }
+}
+@media(max-width:767px){
+  .container {
+    max-width: 540px;
+  }
+}
+@media(max-width:450px){
+  .container {
+    max-width: 370px;
+  }
+}
