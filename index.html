@@ -12,83 +12,142 @@
 <body>
   <section class="mapSection">
     <div class="container">
-      <canvas id="aiChart"></canvas>
+      <h2 class="mapSection__heading">Evolution of AI</h2>
+      <p class="mapSection__span">1950 - Future</p>
+      <img src="downarrow.svg" alt="" class="mapSection__img">
+      <div class="relative">
+        <div class="relative__border"></div>
+        <canvas id="aiChart"></canvas>
+      </div>
     </div>
   </section>
   <script>
+    const taglines = {
+      1950: 'AI conceptualized as machines that can think.',
+      1960: 'Emergence of symbolic AI and early programs.',
+      1970: 'AI Winter halts development of AI after early boom.',
+      1975: 'New optimism with expert systems.',
+      2000: 'Machine learning begins to rise.',
+      2010: 'Deep learning breakthroughs fuel AI advancements.',
+      2020: 'AI impacts daily life with automation and predictions.',
+      2030: 'AI predicted to surpass human-level intelligence.'
+    };
+
     const ctx = document.getElementById('aiChart').getContext('2d');
 
+    // Default options
+    let chartOptions = {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          titleColor: 'cyan',
+          backgroundColor: '#333',
+          titleFont: {
+            size: 24,
+            weight: 'bold',
+            family: "'Helvetica', sans-serif",
+          },
+          bodyFont: {
+            size: 12,
+            family: "'Helvetica', sans-serif",
+          },
+          padding: 20,
+          cornerRadius: 10,
+          displayColors: false,
+          callbacks: {
+            title: function (context) {
+              return context[0].label + 's'; // Append "s" to display the decade
+            },
+            label: function (tooltipItem) {
+              const year = tooltipItem.raw.x;
+              return taglines[year] || 'No data available'; // Fetch tagline or fallback text
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          ticks: {
+            color: 'white',
+            padding: 40
+          },
+          grid: {
+            drawOnChartArea: false,
+            drawTicks: false,
+            min: 1945,
+            max: 2035,
+          }
+        },
+        y: {
+          display: false
+        }
+      }
+    };
+
+    // Function to update dot size and padding dynamically
+    function updateChartOptions() {
+      if (window.innerWidth <= 430) {
+        // For screens <= 430px
+        chartOptions.scales.x.ticks.padding = 10; // Smallest padding
+        chart.data.datasets[0].pointRadius = 2; // Smallest dot size
+        chart.data.datasets[0].pointHoverRadius = 3; // Small hover dot size
+      } else if (window.innerWidth <= 767) {
+        // For screens between 431px and 767px
+        chartOptions.scales.x.ticks.padding = 23; // Medium padding
+        chart.data.datasets[0].pointRadius = 3; // Medium dot size
+        chart.data.datasets[0].pointHoverRadius = 4; // Medium hover dot size
+      } else {
+        // Default for larger screens
+        chartOptions.scales.x.ticks.padding = 40; // Default padding
+        chart.data.datasets[0].pointRadius = 6; // Default dot size
+        chart.data.datasets[0].pointHoverRadius = 6; // Default hover dot size
+      }
+    }
+    // Initialize Chart.js
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030], // Years
+        labels: [1950, 1960, 1970, 1975, 2000, 2010, 2020, 2030],
         datasets: [{
           label: 'AI Evolution',
           data: [
-            { x: 1950, y: 0 },
-            { x: 1960, y: 1 },
+            { x: 1950, y: 2 },
+            { x: 1960, y: 4 },
             { x: 1970, y: 2 },
             { x: 1975, y: 4 },
-            // Skipping values for 1980 and 1990
             { x: 2000, y: 7 },
             { x: 2010, y: 10 },
             { x: 2020, y: 15 },
             { x: 2030, y: 22 }
           ],
-          borderColor: 'cyan', // Solid cyan line
+          borderColor: 'cyan',
           borderWidth: 2,
-          tension: 0.4, // Smooth spline line
-          pointBackgroundColor: 'black', // Default dot background color
-          pointBorderColor: 'cyan', // Dot border color
+          tension: 0.4,
+          pointBackgroundColor: 'black',
+          pointBorderColor: 'cyan',
           pointBorderWidth: 3,
-          pointRadius: 6, // Fixed size for dots
-          pointHoverBackgroundColor: 'cyan', // On hover, fill dots with cyan
-          pointHoverBorderColor: 'cyan', // On hover, maintain cyan border
+          pointRadius: 6,
+          pointHoverBackgroundColor: 'cyan',
+          pointHoverBorderColor: 'cyan',
           pointHoverBorderWidth: 3,
-          pointHoverRadius: 6, // Ensure dot size stays constant on hover
-          fill: false // No fill under the line
+          pointHoverRadius: 6,
         }]
       },
-      options: {
-        responsive: true,
-        // scales: {
-        //   xAxes: [{ gridLines: { color: "#fff" } }],
-        //   yAxes: [{ gridLines: { color: "#fff" } }]
-        // },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              title: function () {
-                return '';
-              },
-              label: function (tooltipItem) {
-                return 'Value: ' + tooltipItem.raw.y;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            type: 'linear',
-            position: 'bottom',
-            ticks: { color: 'white' },
-            xAxes: [{ gridLines: { color: "#fff" } }],
-            yAxes: [{ gridLines: { color: "#fff" } }],
-            grid: {
-              drawOnChartArea: false,
-              drawTicks: false,
-              drawBorder: true,    // This draws a line at the axis
-              borderWidth: 2,
-              borderColor: 'cyan'
-            }
-          },
-          y: {
-            display: false
-          }
-        }
-      }
+      options: chartOptions
     });
+
+    // Apply changes on window resize
+    window.addEventListener('resize', () => {
+      updateChartOptions();
+      chart.update();
+    });
+
+    // Initial call to set options based on current screen size
+    updateChartOptions();
+    chart.update();
+
   </script>
 </body>
 
