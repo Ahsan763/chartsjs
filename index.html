@@ -23,6 +23,7 @@
     </div>
   </section>
   <script>
+
     const taglines = {
       1950: 'AI conceptualized as machines that can think.',
       1960: 'Emergence of symbolic AI and early programs.',
@@ -39,33 +40,91 @@
       responsive: true,
       plugins: {
         legend: { display: false },
+        // tooltip: {
+        //   boxWidth: 40,
+        //   titleColor: 'cyan',
+        //   backgroundColor: '#333',
+        //   titleFont: {
+        //     size: 24,
+        //     weight: 'bold',
+        //     family: "'Helvetica', sans-serif",
+        //   },
+        //   bodyFont: {
+        //     size: 12,
+        //     family: "'Helvetica', sans-serif",
+        //   },
+        //   padding: 20,
+        //   cornerRadius: 10,
+        //   displayColors: false,
+        //   outerWidth: 40,
+        //   yAlign: 'bottom',
+        //   xAlign: 'center',
+        //   caretPadding: 25, // Add more offset between tooltip and dot
+        //   callbacks: {
+        //     title: function (context) {
+        //       return context[0].label + 's';
+        //     },
+        //     label: function (tooltipItem) {
+        //       const year = tooltipItem.raw.x;
+        //       return taglines[year] || 'No data available';
+        //     }
+        //   }
+        // }
+
         tooltip: {
-          titleColor: 'cyan',
-          backgroundColor: '#333',
-          titleFont: {
-            size: 24,
-            weight: 'bold',
-            family: "'Helvetica', sans-serif",
-          },
-          bodyFont: {
-            size: 12,
-            family: "'Helvetica', sans-serif",
-          },
-          padding: 20,
-          cornerRadius: 10,
-          displayColors: false,
-          // Force tooltip to appear above the dot, centered horizontally
-          yAlign: 'bottom',
-          xAlign: 'center',
-          caretPadding: 10, // Extra space between tooltip and point
-          callbacks: {
-            title: function (context) {
-              return context[0].label + 's'; // Append "s" to display the decade
-            },
-            label: function (tooltipItem) {
-              const year = tooltipItem.raw.x;
-              return taglines[year] || 'No data available'; // Fetch tagline or fallback
+          enabled: false, // Disable the default tooltip
+          external: function (context) {
+            // Tooltip Element
+            let tooltipEl = document.getElementById('chartjs-tooltip');
+            if (!tooltipEl) {
+              tooltipEl = document.createElement('div');
+              tooltipEl.id = 'chartjs-tooltip';
+              tooltipEl.style.background = '#333';
+              tooltipEl.style.borderRadius = '10px';
+              tooltipEl.style.color = 'white';
+              tooltipEl.style.opacity = 1;
+              tooltipEl.style.pointerEvents = 'none';
+              // tooltipEl.style.position = 'absolute';
+              // tooltipEl.style.transform = 'translate(-50%, -100%)';
+              tooltipEl.style.transition = 'opacity 0.2s ease';
+              tooltipEl.style.padding = '10px 15px';
+              tooltipEl.style.fontFamily = "'Helvetica', sans-serif";
+              tooltipEl.style.fontSize = '12px';
+              tooltipEl.style.width = '300px';
+              tooltipEl.style.textAlign = 'center';
+              document.body.appendChild(tooltipEl);
             }
+
+            // Hide tooltip when no active elements
+            const tooltipModel = context.tooltip;
+            if (tooltipModel.opacity === 0) {
+              tooltipEl.style.opacity = 0;
+              return;
+            }
+
+            // Set Text
+            if (tooltipModel.body) {
+              const dataPoint = tooltipModel.dataPoints[0];
+              const year = dataPoint.raw.x;
+              tooltipEl.innerHTML = `
+            <div style="font-size: 24px; font-weight: bold; color: cyan;">
+              ${year}s
+            </div>
+            <div>${taglines[year] || 'No data available'}</div>`;
+            }
+
+            // Positioning
+            const position = context.chart.canvas.getBoundingClientRect();
+            const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
+
+            // Display, position, and set styles for font
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.position = 'absolute';
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+            tooltipEl.style.font = bodyFont.string;
+            tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
+            tooltipEl.style.pointerEvents = 'none';
           }
         }
       },
@@ -92,7 +151,7 @@
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030],
+        labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, `hjhjhjh`],
         datasets: [{
           label: 'AI Evolution',
           data: [
@@ -107,16 +166,16 @@
             { x: 2030, y: 9.6 }
           ],
           borderColor: 'cyan',
-          borderWidth: 2,
           tension: 0.4,
+          borderWidth: 2,
           pointBackgroundColor: 'black',
           pointBorderColor: 'cyan',
-          pointBorderWidth: 3,
-          pointRadius: 6,
+          pointBorderWidth: 2,
+          pointRadius: 30,
           pointHoverBackgroundColor: 'cyan',
-          pointHoverBorderColor: 'cyan',
-          pointHoverBorderWidth: 3,
-          pointHoverRadius: 6,
+          pointHoverBorderColor: 'rgba(14, 230, 255, 0.6)',
+          pointHoverBorderWidth: 6,
+          pointHoverRadius: 1,
         }]
       },
       options: chartOptions
@@ -136,8 +195,8 @@
       } else {
         // Default for larger screens
         chartOptions.scales.x.ticks.padding = 40; // Default padding
-        chart.data.datasets[0].pointRadius = 6; // Default dot size
-        chart.data.datasets[0].pointHoverRadius = 6; // Default hover dot size
+        chart.data.datasets[0].pointRadius = 5; // Default dot size
+        chart.data.datasets[0].pointHoverRadius = 5; // Default hover dot size
       }
       // Re-assign the updated options to the chart and update
       chart.options = chartOptions;
