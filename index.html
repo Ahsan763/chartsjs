@@ -7,6 +7,7 @@
   <title>Document</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
@@ -32,9 +33,7 @@
       2020: 'AI impacts daily life with automation and predictions.',
       2030: 'AI predicted to surpass human-level intelligence.'
     };
-
     const ctx = document.getElementById('aiChart').getContext('2d');
-
     // Default options
     let chartOptions = {
       responsive: true,
@@ -55,13 +54,17 @@
           padding: 20,
           cornerRadius: 10,
           displayColors: false,
+          // Force tooltip to appear above the dot, centered horizontally
+          yAlign: 'bottom',
+          xAlign: 'center',
+          caretPadding: 10, // Extra space between tooltip and point
           callbacks: {
             title: function (context) {
               return context[0].label + 's'; // Append "s" to display the decade
             },
             label: function (tooltipItem) {
               const year = tooltipItem.raw.x;
-              return taglines[year] || 'No data available'; // Fetch tagline or fallback text
+              return taglines[year] || 'No data available'; // Fetch tagline or fallback
             }
           }
         }
@@ -85,7 +88,39 @@
         }
       }
     };
-
+    // Initialize Chart.js
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030],
+        datasets: [{
+          label: 'AI Evolution',
+          data: [
+            { x: 1950, y: 0 },
+            // { x: 1960, y: 0.6 },
+            { x: 1970, y: 0.3 },
+            // { x: 1980, y: 2.5 },
+            { x: 1990, y: 1.4 },
+            { x: 2005, y: 3 },
+            // { x: 2010, y: 9 },
+            { x: 2020, y: 6 },
+            { x: 2030, y: 9.6 }
+          ],
+          borderColor: 'cyan',
+          borderWidth: 2,
+          tension: 0.4,
+          pointBackgroundColor: 'black',
+          pointBorderColor: 'cyan',
+          pointBorderWidth: 3,
+          pointRadius: 6,
+          pointHoverBackgroundColor: 'cyan',
+          pointHoverBorderColor: 'cyan',
+          pointHoverBorderWidth: 3,
+          pointHoverRadius: 6,
+        }]
+      },
+      options: chartOptions
+    });
     // Function to update dot size and padding dynamically
     function updateChartOptions() {
       if (window.innerWidth <= 430) {
@@ -104,50 +139,16 @@
         chart.data.datasets[0].pointRadius = 6; // Default dot size
         chart.data.datasets[0].pointHoverRadius = 6; // Default hover dot size
       }
+      // Re-assign the updated options to the chart and update
+      chart.options = chartOptions;
+      chart.update();
     }
-    // Initialize Chart.js
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [1950, 1960, 1970, 1975, 2000, 2010, 2020, 2030],
-        datasets: [{
-          label: 'AI Evolution',
-          data: [
-            { x: 1950, y: 2 },
-            { x: 1960, y: 4 },
-            { x: 1970, y: 2 },
-            { x: 1975, y: 4 },
-            { x: 2000, y: 7 },
-            { x: 2010, y: 10 },
-            { x: 2020, y: 15 },
-            { x: 2030, y: 22 }
-          ],
-          borderColor: 'cyan',
-          borderWidth: 2,
-          tension: 0.4,
-          pointBackgroundColor: 'black',
-          pointBorderColor: 'cyan',
-          pointBorderWidth: 3,
-          pointRadius: 6,
-          pointHoverBackgroundColor: 'cyan',
-          pointHoverBorderColor: 'cyan',
-          pointHoverBorderWidth: 3,
-          pointHoverRadius: 6,
-        }]
-      },
-      options: chartOptions
-    });
-
     // Apply changes on window resize
     window.addEventListener('resize', () => {
       updateChartOptions();
-      chart.update();
     });
-
     // Initial call to set options based on current screen size
     updateChartOptions();
-    chart.update();
-
   </script>
 </body>
 
