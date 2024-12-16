@@ -57,6 +57,20 @@ body{
   margin-bottom: 100px;
   text-align: center;
 }
+
+#chartjs-tooltip {
+  background: #333;
+  border-radius: 10px;
+  color: white;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  padding: 10px 15px;
+  font-family: 'Helvetica', sans-serif;
+  font-size: 12px;
+  width: 300px;
+  text-align: center;
+}
 @media(max-width:1199px){
   .container {
     max-width: 768px;
