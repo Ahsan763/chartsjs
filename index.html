@@ -118,10 +118,10 @@
         const dataPoint = tooltipModel.dataPoints[0];
         const year = dataPoint.raw.x;
         tooltipEl.innerHTML = `
-    <div style="font-size: 24px; font-weight: bold; color: cyan;">
+    <div style="font-size: 24px; font-weight: 400; color: cyan; margin-bottom:15px;">
         ${year}s
     </div>
-    <div>${taglines[year] || 'No data available'}</div>`;
+    <div style="font-size:20px; font-weight: 300;">${taglines[year] || 'No data available'}</div>`;
       }
 
       // Positioning
@@ -130,10 +130,10 @@
 
       // Calculate tooltip position
       let left = position.left + window.pageXOffset + tooltipModel.caretX - 150; // Center tooltip
-      let top = position.top + window.pageYOffset + tooltipModel.caretY - 100; // 100px above the point
+      let top = position.top + window.pageYOffset + tooltipModel.caretY - 150; // 100px above the point
 
       // Adjust horizontal positioning to ensure tooltip doesn't go off-screen
-      const tooltipWidth = 300; // Width of the tooltip
+      const tooltipWidth = 150; // Width of the tooltip
       const windowWidth = window.innerWidth;
 
       if (left + tooltipWidth > windowWidth - 60) { // Changed from 10 to 60 to add more space

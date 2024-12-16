@@ -68,8 +68,10 @@ body{
   padding: 10px 15px;
   font-family: 'Helvetica', sans-serif;
   font-size: 12px;
-  width: 300px;
-  text-align: center;
+  min-width: 250px;
+  max-width: min-content;
+  /* width: fit-content; */
+  text-align: left;
 }
 @media(max-width:1199px){
   .container {
