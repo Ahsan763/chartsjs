@@ -33,10 +33,8 @@
       2020: 'AI impacts daily life with automation and predictions.',
       2030: 'AI predicted to surpass human-level intelligence.'
     };
-
     const ctx = document.getElementById('aiChart').getContext('2d');
     let chart;
-
     const chartOptions = {
       responsive: true,
       plugins: {
@@ -50,8 +48,11 @@
         x: {
           type: 'linear',
           ticks: {
+            padding: 40,
             color: 'white',
-            padding: 40
+            callback: function (value) {
+              return value === 2030 ? '2030+' : value; // Show "2030+" for the year 2030
+            },
           },
           grid: {
             drawOnChartArea: false,
@@ -70,7 +71,7 @@
       chart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030],
+          // labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030],
           datasets: [{
             label: 'AI Evolution',
             data: [
@@ -98,7 +99,6 @@
       });
     }
     function externalTooltipHandler(context) {
-      // Tooltip Element
       let tooltipEl = document.getElementById('chartjs-tooltip');
       if (!tooltipEl) {
         tooltipEl = document.createElement('div');
@@ -123,12 +123,7 @@
     </div>
     <div class="tooltipYeartagline">${taglines[year] || 'No data available'}</div>`;
       }
-
-      // Positioning
       const position = context.chart.canvas.getBoundingClientRect();
-      // const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
-
-      // Calculate tooltip position
       let left = position.left + window.pageXOffset + tooltipModel.caretX - 125; // Center tooltip
       let top = position.top + window.pageYOffset + tooltipModel.caretY - 150; // 100px above the point
 
@@ -143,8 +138,6 @@
       if (left < 10) {
         left = 10; // Ensure the tooltip doesn't go off the left edge
       }
-
-      // Display, position, and set styles for font
       tooltipEl.style.opacity = '1';
       tooltipEl.style.position = 'absolute';
       tooltipEl.style.left = `${left}px`;
@@ -154,99 +147,28 @@
       tooltipEl.style.padding = `${tooltipModel.padding}px`;
       tooltipEl.style.pointerEvents = 'none';
     }
-
-    // function externalTooltipHandler(context) {
-    //   // Tooltip Element
-    //   let tooltipEl = document.getElementById('chartjs-tooltip');
-    //   if (!tooltipEl) {
-    //     tooltipEl = document.createElement('div');
-    //     tooltipEl.id = 'chartjs-tooltip';
-    //     document.body.appendChild(tooltipEl);
-    //   }
-
-    //   // Hide tooltip when no active elements
-    //   const tooltipModel = context.tooltip;
-    //   if (tooltipModel.opacity === 0) {
-    //     tooltipEl.style.opacity = '0';
-    //     return;
-    //   }
-
-    //   // Set Text
-    //   if (tooltipModel.body) {
-    //     const dataPoint = tooltipModel.dataPoints[0];
-    //     const year = dataPoint.raw.x;
-    //     tooltipEl.innerHTML = `
-    //         <div style="font-size: 24px; font-weight: bold; color: cyan;">
-    //             ${year}s
-    //         </div>
-    //         <div>${taglines[year] || 'No data available'}</div>`;
-    //   }
-
-    //   // Positioning
-    //   const position = context.chart.canvas.getBoundingClientRect();
-    //   const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
-
-    //   // Calculate position
-    //   let left = position.left + window.pageXOffset + tooltipModel.caretX;
-    //   // let top = position.top + window.pageYOffset + tooltipModel.caretY;
-
-    //   // Adjust position if tooltip goes off-screen
-    //   const tooltipWidth = 300; // Width of the tooltip
-    //   // const tooltipHeight = 150; // Approximate height of the tooltip
-    //   const windowWidth = window.innerWidth;
-
-    //   if (left + tooltipWidth > windowWidth) {
-    //     left = windowWidth - tooltipWidth - 70; // 10px padding from the right edge
-    //   }
-
-    //   // if (top + tooltipHeight > windowHeight) {
-    //   //   top = windowHeight - tooltipHeight + 300; // 10px padding from the bottom edge
-    //   // }
-
-    //   // Display, position, and set styles for font
-    //   tooltipEl.style.opacity = '1';
-    //   tooltipEl.style.position = 'absolute';
-    //   tooltipEl.style.left = left + 'px';
-    //   // tooltipEl.style.top = '0';
-    //   tooltipEl.style.font = bodyFont.string;
-    //   tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
-    //   tooltipEl.style.pointerEvents = 'none';
-    // }
-
     function updateChartOptions() {
       if (!chart) return;
 
-      if (window.innerWidth <= 430) {
-        // For screens <= 430px
-        chartOptions.scales.x.ticks.padding = 10; // Smallest padding
-        chart.data.datasets[0].pointRadius = 2; // Smallest dot size
-        chart.data.datasets[0].pointHoverRadius = 3; // Small hover dot size
-      } else if (window.innerWidth <= 767) {
-        // For screens between 431px and 767px
-        chartOptions.scales.x.ticks.padding = 23; // Medium padding
-        chart.data.datasets[0].pointRadius = 3; // Medium dot size
-        chart.data.datasets[0].pointHoverRadius = 4; // Medium hover dot size
-      } else {
-        // Default for larger screens
-        chartOptions.scales.x.ticks.padding = 40; // Default padding
-        chart.data.datasets[0].pointRadius = 5; // Default dot size
-        chart.data.datasets[0].pointHoverRadius = 5; // Default hover dot size
-        let left = position.left + window.pageXOffset + tooltipModel.caretX - 125; // Center tooltip
-        let top = position.top + window.pageYOffset + tooltipModel.caretY - 150;
-      }
-      // Re-assign the updated options to the chart and update
-      chart.options = chartOptions;
-      chart.update();
+      const isSmallScreen = window.innerWidth <= 430;
+      const isMediumScreen = window.innerWidth > 430 && window.innerWidth <= 767;
+
+      // Update padding and dot sizes based on screen size
+      chart.options.scales.x.ticks.padding = isSmallScreen ? 10 : isMediumScreen ? 23 : 40;
+      chart.data.datasets[0].pointRadius = isSmallScreen ? 2 : isMediumScreen ? 3 : 5;
+      chart.data.datasets[0].pointHoverRadius = isSmallScreen ? 3 : isMediumScreen ? 4 : 5;
+
+      // Trigger resize
+      chart.resize(); // This ensures the canvas resizes along with the screen
+
+      chart.update(); // Update the chart to apply the changes
     }
 
-    // Create the chart when the page loads
-    window.addEventListener('load', createChart);
-
-    // Apply changes on window resize
-    window.addEventListener('resize', updateChartOptions);
-
-    // Initial call to set options based on current screen size
-    window.addEventListener('load', updateChartOptions);
+    window.addEventListener('load', () => {
+      createChart(); // Initialize the chart
+      updateChartOptions(); // Update the chart on load
+    });
+    window.addEventListener('resize', updateChartOptions); // Update the chart on window resize
 
 
   </script>
