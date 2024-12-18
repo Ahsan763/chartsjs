@@ -118,18 +118,18 @@
         const dataPoint = tooltipModel.dataPoints[0];
         const year = dataPoint.raw.x;
         tooltipEl.innerHTML = `
-    <div style="font-size: 24px; font-weight: 400; color: cyan; margin-bottom:15px;">
+    <div class="tooltipYearHeading">
         ${year}s
     </div>
-    <div style="font-size:20px; font-weight: 300;">${taglines[year] || 'No data available'}</div>`;
+    <div class="tooltipYeartagline">${taglines[year] || 'No data available'}</div>`;
       }
 
       // Positioning
       const position = context.chart.canvas.getBoundingClientRect();
-      const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
+      // const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
 
       // Calculate tooltip position
-      let left = position.left + window.pageXOffset + tooltipModel.caretX - 150; // Center tooltip
+      let left = position.left + window.pageXOffset + tooltipModel.caretX - 125; // Center tooltip
       let top = position.top + window.pageYOffset + tooltipModel.caretY - 150; // 100px above the point
 
       // Adjust horizontal positioning to ensure tooltip doesn't go off-screen
@@ -148,8 +148,9 @@
       tooltipEl.style.opacity = '1';
       tooltipEl.style.position = 'absolute';
       tooltipEl.style.left = `${left}px`;
+      tooltipEl.style.right = `${left}px`;
       tooltipEl.style.top = `${top}px`;
-      tooltipEl.style.font = bodyFont.string;
+      // tooltipEl.style.font = bodyFont.string;
       tooltipEl.style.padding = `${tooltipModel.padding}px`;
       tooltipEl.style.pointerEvents = 'none';
     }
@@ -230,6 +231,8 @@
         chartOptions.scales.x.ticks.padding = 40; // Default padding
         chart.data.datasets[0].pointRadius = 5; // Default dot size
         chart.data.datasets[0].pointHoverRadius = 5; // Default hover dot size
+        let left = position.left + window.pageXOffset + tooltipModel.caretX - 125; // Center tooltip
+        let top = position.top + window.pageYOffset + tooltipModel.caretY - 150;
       }
       // Re-assign the updated options to the chart and update
       chart.options = chartOptions;

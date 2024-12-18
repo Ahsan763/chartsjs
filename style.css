@@ -16,12 +16,7 @@ body{
 .mapSection{
   padding: 100px 0 80px 0;
   text-align: center;
-}
-.chartjs-tooltip {
-  max-width: 50px !important; /* Adjust width */
-  min-width: 00px !important;
-  white-space: normal; /* Allow text wrapping */
-  text-align: center;
+  overflow-x: hidden;
 }
 .relative{
   position: relative;
@@ -67,11 +62,37 @@ body{
   transition: opacity 0.2s ease;
   padding: 10px 15px;
   font-family: 'Helvetica', sans-serif;
-  font-size: 12px;
   min-width: 250px;
   max-width: min-content;
   /* width: fit-content; */
   text-align: left;
+}
+.tooltipYearHeading{
+  font-size: 24px;
+  font-weight: 400;
+  color: cyan;
+  margin-bottom:15px;
+}
+.tooltipYeartagline{
+  font-size:20px;
+  font-weight: 300;
+}
+@media(max-width:1599px){
+  #chartjs-tooltip {
+    min-width: 220px;
+  }
+}
+@media(max-width:1399px){
+  #chartjs-tooltip {
+    min-width: 200px;
+  }
+  .tooltipYearHeading{
+    font-size: 22px;
+    margin-bottom:10px;
+  }
+  .tooltipYeartagline{
+    font-size:18px;
+  }
 }
 @media(max-width:1199px){
   .container {
@@ -115,6 +136,16 @@ body{
   width: 10px;
   margin-bottom: 30px;
 }
+#chartjs-tooltip {
+  min-width: 170px;
+}
+.tooltipYearHeading{
+  font-size: 18px;
+  margin-bottom:10px;
+}
+.tooltipYeartagline{
+  font-size:16px;
+}
 }
 @media(max-width:450px){
   .container {
@@ -135,5 +166,15 @@ body{
 .mapSection__span {
   font-size: 16px;
   margin-bottom: 10px;
+}
+#chartjs-tooltip {
+  min-width: 140px;
+}
+.tooltipYearHeading{
+  font-size: 16px;
+  margin-bottom:10px;
+}
+.tooltipYeartagline{
+  font-size:13px;
 }
 }
