@@ -33,16 +33,23 @@
       2020: 'AI impacts daily life with automation and predictions.',
       2030: 'AI predicted to surpass human-level intelligence.'
     };
+
     const ctx = document.getElementById('aiChart').getContext('2d');
     let chart;
+
     const chartOptions = {
       responsive: true,
       plugins: {
         legend: { display: false },
         tooltip: {
           enabled: false,
-          external: externalTooltipHandler
-        }
+          external: externalTooltipHandler,
+        },
+      },
+      hover: {
+        mode: 'nearest', // Highlight the nearest point on hover
+        intersect: true, // Ensure hover applies only when the cursor is over a point
+        animationDuration: 400, // Duration of the hover animation
       },
       scales: {
         x: {
@@ -51,7 +58,7 @@
             padding: 40,
             color: 'white',
             callback: function (value) {
-              return value === 2030 ? '2030+' : value; // Show "2030+" for the year 2030
+              return value === 2030 ? '2030+' : value;
             },
           },
           grid: {
@@ -59,19 +66,19 @@
             drawTicks: false,
             min: 1945,
             max: 2035,
-          }
+          },
         },
         y: {
-          display: false
-        }
-      }
+          display: false,
+        },
+      },
     };
+
 
     function createChart() {
       chart = new Chart(ctx, {
         type: 'line',
         data: {
-          // labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030],
           datasets: [{
             label: 'AI Evolution',
             data: [
@@ -89,15 +96,17 @@
             pointBorderColor: 'cyan',
             pointBorderWidth: 2,
             pointRadius: 5,
+            pointHoverRadius: 8, // Increase radius on hover for zoom effect
             pointHoverBackgroundColor: 'cyan',
             pointHoverBorderColor: 'rgba(14, 230, 255, 0.6)',
             pointHoverBorderWidth: 6,
-            pointHoverRadius: 5,
           }]
         },
         options: chartOptions
       });
     }
+
+
     function externalTooltipHandler(context) {
       let tooltipEl = document.getElementById('chartjs-tooltip');
       if (!tooltipEl) {
@@ -106,260 +115,70 @@
         document.body.appendChild(tooltipEl);
       }
 
-      // Hide tooltip when no active elements
       const tooltipModel = context.tooltip;
       if (tooltipModel.opacity === 0) {
         tooltipEl.style.opacity = '0';
+        tooltipEl.style.scale = '0';
         return;
       }
 
-      // Set Text
       if (tooltipModel.body) {
         const dataPoint = tooltipModel.dataPoints[0];
         const year = dataPoint.raw.x;
         tooltipEl.innerHTML = `
-    <div class="tooltipYearHeading">
+      <div class="tooltipYearHeading">
         ${year}s
-    </div>
-    <div class="tooltipYeartagline">${taglines[year] || 'No data available'}</div>`;
+      </div>
+      <div class="tooltipYeartagline">${taglines[year] || 'No data available'}</div>`;
       }
-      const position = context.chart.canvas.getBoundingClientRect();
-      let left = position.left + window.pageXOffset + tooltipModel.caretX - 125; // Center tooltip
-      let top = position.top + window.pageYOffset + tooltipModel.caretY - 150; // 100px above the point
 
-      // Adjust horizontal positioning to ensure tooltip doesn't go off-screen
-      const tooltipWidth = 150; // Width of the tooltip
+      const position = context.chart.canvas.getBoundingClientRect();
+      let left = position.left + window.pageXOffset + tooltipModel.caretX - 125;
+      let top = position.top + window.pageYOffset + tooltipModel.caretY - 150;
+
+      const tooltipWidth = 150;
       const windowWidth = window.innerWidth;
 
-      if (left + tooltipWidth > windowWidth - 60) { // Changed from 10 to 60 to add more space
-        left = windowWidth - tooltipWidth - 60; // Ensure the tooltip stays within the right edge with extra space
+      if (left + tooltipWidth > windowWidth - 60) {
+        left = windowWidth - tooltipWidth - 60;
       }
 
       if (left < 10) {
-        left = 10; // Ensure the tooltip doesn't go off the left edge
+        left = 10;
       }
+
       tooltipEl.style.opacity = '1';
+      tooltipEl.style.scale = '1';
       tooltipEl.style.position = 'absolute';
       tooltipEl.style.left = `${left}px`;
       tooltipEl.style.right = `${left}px`;
       tooltipEl.style.top = `${top}px`;
-      // tooltipEl.style.font = bodyFont.string;
-      tooltipEl.style.padding = `${tooltipModel.padding}px`;
       tooltipEl.style.pointerEvents = 'none';
     }
+
     function updateChartOptions() {
       if (!chart) return;
 
       const isSmallScreen = window.innerWidth <= 430;
       const isMediumScreen = window.innerWidth > 430 && window.innerWidth <= 767;
 
-      // Update padding and dot sizes based on screen size
       chart.options.scales.x.ticks.padding = isSmallScreen ? 10 : isMediumScreen ? 23 : 40;
       chart.data.datasets[0].pointRadius = isSmallScreen ? 2 : isMediumScreen ? 3 : 5;
       chart.data.datasets[0].pointHoverRadius = isSmallScreen ? 3 : isMediumScreen ? 4 : 5;
 
-      // Trigger resize
-      chart.resize(); // This ensures the canvas resizes along with the screen
-
-      chart.update(); // Update the chart to apply the changes
+      chart.resize();
+      chart.update();
     }
 
     window.addEventListener('load', () => {
-      createChart(); // Initialize the chart
-      updateChartOptions(); // Update the chart on load
+      createChart();
+      updateChartOptions();
     });
-    window.addEventListener('resize', updateChartOptions); // Update the chart on window resize
+    window.addEventListener('resize', updateChartOptions);
 
 
   </script>
-  <!-- <script>
 
-    const taglines = {
-      1950: 'AI conceptualized as machines that can think.',
-      1960: 'Emergence of symbolic AI and early programs.',
-      1970: 'AI Winter halts development of AI after early boom.',
-      1975: 'New optimism with expert systems.',
-      2000: 'Machine learning begins to rise.',
-      2010: 'Deep learning breakthroughs fuel AI advancements.',
-      2020: 'AI impacts daily life with automation and predictions.',
-      2030: 'AI predicted to surpass human-level intelligence.'
-    };
-
-    const ctx = document.getElementById('aiChart').getContext('2d');
-    // Default options
-    let chartOptions = {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        // tooltip: {
-        //   boxWidth: 40,
-        //   titleColor: 'cyan',
-        //   backgroundColor: '#333',
-        //   titleFont: {
-        //     size: 24,
-        //     weight: 'bold',
-        //     family: "'Helvetica', sans-serif",
-        //   },
-        //   bodyFont: {
-        //     size: 12,
-        //     family: "'Helvetica', sans-serif",
-        //   },
-        //   padding: 20,
-        //   cornerRadius: 10,
-        //   displayColors: false,
-        //   outerWidth: 40,
-        //   yAlign: 'bottom',
-        //   xAlign: 'center',
-        //   caretPadding: 25, // Add more offset between tooltip and dot
-        //   callbacks: {
-        //     title: function (context) {
-        //       return context[0].label + 's';
-        //     },
-        //     label: function (tooltipItem) {
-        //       const year = tooltipItem.raw.x;
-        //       return taglines[year] || 'No data available';
-        //     }
-        //   }
-        // }
-
-        tooltip: {
-          enabled: false, // Disable the default tooltip
-          external: function (context) {
-            // Tooltip Element
-            let tooltipEl = document.getElementById('chartjs-tooltip');
-            if (!tooltipEl) {
-              tooltipEl = document.createElement('div');
-              tooltipEl.id = 'chartjs-tooltip';
-              tooltipEl.style.background = '#333';
-              tooltipEl.style.borderRadius = '10px';
-              tooltipEl.style.color = 'white';
-              tooltipEl.style.opacity = 1;
-              tooltipEl.style.pointerEvents = 'none';
-              // tooltipEl.style.position = 'absolute';
-              // tooltipEl.style.transform = 'translate(-50%, -100%)';
-              tooltipEl.style.transition = 'opacity 0.2s ease';
-              tooltipEl.style.padding = '10px 15px';
-              tooltipEl.style.fontFamily = "'Helvetica', sans-serif";
-              tooltipEl.style.fontSize = '12px';
-              tooltipEl.style.width = '300px';
-              tooltipEl.style.textAlign = 'center';
-              document.body.appendChild(tooltipEl);
-            }
-
-            // Hide tooltip when no active elements
-            const tooltipModel = context.tooltip;
-            if (tooltipModel.opacity === 0) {
-              tooltipEl.style.opacity = 0;
-              return;
-            }
-
-            // Set Text
-            if (tooltipModel.body) {
-              const dataPoint = tooltipModel.dataPoints[0];
-              const year = dataPoint.raw.x;
-              tooltipEl.innerHTML = `
-            <div style="font-size: 24px; font-weight: bold; color: cyan;">
-              ${year}s
-            </div>
-            <div>${taglines[year] || 'No data available'}</div>`;
-            }
-
-            // Positioning
-            const position = context.chart.canvas.getBoundingClientRect();
-            const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
-
-            // Display, position, and set styles for font
-            tooltipEl.style.opacity = 1;
-            tooltipEl.style.position = 'absolute';
-            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
-            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
-            tooltipEl.style.font = bodyFont.string;
-            tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
-            tooltipEl.style.pointerEvents = 'none';
-          }
-        }
-      },
-      scales: {
-        x: {
-          type: 'linear',
-          ticks: {
-            color: 'white',
-            padding: 40
-          },
-          grid: {
-            drawOnChartArea: false,
-            drawTicks: false,
-            min: 1945,
-            max: 2035,
-          }
-        },
-        y: {
-          display: false
-        }
-      }
-    };
-    // Initialize Chart.js
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, `hjhjhjh`],
-        datasets: [{
-          label: 'AI Evolution',
-          data: [
-            { x: 1950, y: 0 },
-            // { x: 1960, y: 0.6 },
-            { x: 1970, y: 0.3 },
-            // { x: 1980, y: 2.5 },
-            { x: 1990, y: 1.4 },
-            { x: 2005, y: 3 },
-            // { x: 2010, y: 9 },
-            { x: 2020, y: 6 },
-            { x: 2030, y: 9.6 }
-          ],
-          borderColor: 'cyan',
-          tension: 0.4,
-          borderWidth: 2,
-          pointBackgroundColor: 'black',
-          pointBorderColor: 'cyan',
-          pointBorderWidth: 2,
-          pointRadius: 30,
-          pointHoverBackgroundColor: 'cyan',
-          pointHoverBorderColor: 'rgba(14, 230, 255, 0.6)',
-          pointHoverBorderWidth: 6,
-          pointHoverRadius: 1,
-        }]
-      },
-      options: chartOptions
-    });
-    // Function to update dot size and padding dynamically
-    function updateChartOptions() {
-      if (window.innerWidth <= 430) {
-        // For screens <= 430px
-        chartOptions.scales.x.ticks.padding = 10; // Smallest padding
-        chart.data.datasets[0].pointRadius = 2; // Smallest dot size
-        chart.data.datasets[0].pointHoverRadius = 3; // Small hover dot size
-      } else if (window.innerWidth <= 767) {
-        // For screens between 431px and 767px
-        chartOptions.scales.x.ticks.padding = 23; // Medium padding
-        chart.data.datasets[0].pointRadius = 3; // Medium dot size
-        chart.data.datasets[0].pointHoverRadius = 4; // Medium hover dot size
-      } else {
-        // Default for larger screens
-        chartOptions.scales.x.ticks.padding = 40; // Default padding
-        chart.data.datasets[0].pointRadius = 5; // Default dot size
-        chart.data.datasets[0].pointHoverRadius = 5; // Default hover dot size
-      }
-      // Re-assign the updated options to the chart and update
-      chart.options = chartOptions;
-      chart.update();
-    }
-    // Apply changes on window resize
-    window.addEventListener('resize', () => {
-      updateChartOptions();
-    });
-    // Initial call to set options based on current screen size
-    updateChartOptions();
-  </script> -->
 </body>
 
 </html>

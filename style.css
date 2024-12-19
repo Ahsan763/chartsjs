@@ -58,8 +58,9 @@ body{
   border-radius: 10px;
   color: white;
   opacity: 1;
+  scale: 1;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: scale 0.2s ease, opacity 0.2s ease;
   padding: 10px 15px;
   font-family: 'Helvetica', sans-serif;
   min-width: 250px;
@@ -76,6 +77,13 @@ body{
 .tooltipYeartagline{
   font-size:20px;
   font-weight: 300;
+}
+#aiChart canvas {
+  transition: transform 0.3s ease-in-out;
+}
+
+#aiChart canvas:hover {
+  transform: scale(1.05); /* Slight zoom on hover */
 }
 @media(max-width:1599px){
   #chartjs-tooltip {
