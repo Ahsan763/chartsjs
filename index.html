@@ -4,39 +4,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>AI Evolution Chart</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
   <section class="mapSection">
     <div class="container">
-      <h2 class="mapSection__heading">Evolution of AI</h2>
-      <p class="mapSection__span">1950 - Future</p>
-      <img src="downarrow.svg" alt="" class="mapSection__img">
       <div class="relative">
-        <div class="relative__border"></div>
+        <div class="headingbox">
+          <h2 class="mapSection__heading">Evolution of AI</h2>
+          <p class="mapSection__span">1950 - Future</p>
+        </div>
+        <div class="relative__border relative__border--x"></div>
+        <div class="relative__border--y"></div>
         <canvas id="aiChart"></canvas>
       </div>
     </div>
   </section>
   <script>
-    const taglines = {
-      1950: 'AI conceptualized as machines that can think.',
-      1960: 'Emergence of symbolic AI and early programs.',
-      1970: 'AI Winter halts development of AI after early boom.',
-      1975: 'New optimism with expert systems.',
-      2000: 'Machine learning begins to rise.',
-      2010: 'Deep learning breakthroughs fuel AI advancements.',
-      2020: 'AI impacts daily life with automation and predictions.',
-      2030: 'AI predicted to surpass human-level intelligence.'
+    // Vertical Line Plugin
+    const verticalLinePlugin = {
+      id: 'verticalLinePlugin',
+      afterDatasetsDraw(chart, args, options) {
+        if (!chart._active || !chart._active.length) return;
+
+        const ctx = chart.ctx;
+        const activePoint = chart._active[0];
+        const x = activePoint.element.x;
+        const topY = chart.scales.y.top;
+        const bottomY = chart.scales.y.bottom;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over'; // Ensures the line is drawn below the points
+        ctx.beginPath();
+        ctx.moveTo(x, topY);
+        ctx.lineTo(x, bottomY);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#454b49';
+        ctx.stroke();
+        ctx.restore();
+      }
     };
 
+    // Label Plugin for "1000TWh"
+    const labelPlugin = {
+      id: 'labelPlugin',
+      afterDatasetsDraw(chart) {
+        const ctx = chart.ctx;
+        const dataset = chart.data.datasets[0];
+        const lastDataPoint = dataset.data[dataset.data.length - 1];
+
+        if (lastDataPoint) {
+          const meta = chart.getDatasetMeta(0);
+          const lastPoint = meta.data[meta.data.length - 1];
+
+          if (lastPoint) {
+            const x = lastPoint.x;
+            const y = lastPoint.y;
+
+            // Draw the label
+            ctx.save();
+            ctx.font = '13px Arial';
+            ctx.fillStyle = 'cyan';
+            ctx.textAlign = 'center';
+            ctx.fillText('1000TWh', x - 6, y - 10); // Adjust `y - 10` to position the label above the point
+            ctx.restore();
+          }
+        }
+      }
+    };
+
+    // Register the plugins
+    Chart.register(verticalLinePlugin, labelPlugin);
+
+    // Define taglines for tooltips
+    const taglines = {
+      1950: 'Turing Test Coined.',
+      1970: 'AI Winter halts development of AI after early boom',
+      1990: 'Many core, yet theoretical, concepts developed.',
+      2005: 'Rapid improvement and access to compute resources.',
+      2022: 'Launch of ChatGpT and other LLMs',
+      2030: 'Unknown breakthroughs to come.'
+    };
+
+    // Chart.js configuration
     const ctx = document.getElementById('aiChart').getContext('2d');
     let chart;
-
     const chartOptions = {
       responsive: true,
       plugins: {
@@ -47,9 +104,8 @@
         },
       },
       hover: {
-        mode: 'nearest', // Highlight the nearest point on hover
-        intersect: true, // Ensure hover applies only when the cursor is over a point
-        animationDuration: 400, // Duration of the hover animation
+        mode: 'nearest',
+        intersect: true,
       },
       scales: {
         x: {
@@ -64,12 +120,14 @@
           grid: {
             drawOnChartArea: false,
             drawTicks: false,
-            min: 1945,
-            max: 2035,
+            min: 1950,
+            max: 2030,
           },
         },
         y: {
           display: false,
+          min: 0, // Minimum value on the y-axis
+          max: 10, // Adjusted maximum value to ensure the label fits within the chart
         },
       },
     };
@@ -82,12 +140,12 @@
           datasets: [{
             label: 'AI Evolution',
             data: [
-              { x: 1950, y: 0 },
+              { x: 1950, y: 0.2 },
               { x: 1970, y: 0.3 },
               { x: 1990, y: 1.4 },
               { x: 2005, y: 3 },
-              { x: 2020, y: 6 },
-              { x: 2030, y: 9.6 }
+              { x: 2022, y: 6.2 },
+              { x: 2030, y: 8 } // Ensure this is the last point
             ],
             borderColor: 'cyan',
             tension: 0.4,
@@ -96,7 +154,7 @@
             pointBorderColor: 'cyan',
             pointBorderWidth: 2,
             pointRadius: 5,
-            pointHoverRadius: 8, // Increase radius on hover for zoom effect
+            pointHoverRadius: 8,
             pointHoverBackgroundColor: 'cyan',
             pointHoverBorderColor: 'rgba(14, 230, 255, 0.6)',
             pointHoverBorderWidth: 6,
@@ -105,7 +163,6 @@
         options: chartOptions
       });
     }
-
 
     function externalTooltipHandler(context) {
       let tooltipEl = document.getElementById('chartjs-tooltip');
@@ -126,15 +183,15 @@
         const dataPoint = tooltipModel.dataPoints[0];
         const year = dataPoint.raw.x;
         tooltipEl.innerHTML = `
-      <div class="tooltipYearHeading">
-        ${year}s
-      </div>
-      <div class="tooltipYeartagline">${taglines[year] || 'No data available'}</div>`;
+          <div class="tooltipYearHeading">
+            ${year === 2005 ? '2000-2010' : year}s
+          </div>
+          <div class="tooltipYeartagline">${taglines[year] || 'No data available'}</div>`;
       }
 
       const position = context.chart.canvas.getBoundingClientRect();
       let left = position.left + window.pageXOffset + tooltipModel.caretX - 125;
-      let top = position.top + window.pageYOffset + tooltipModel.caretY - 150;
+      let top = position.top + window.pageYOffset + tooltipModel.caretY - 190;
 
       const tooltipWidth = 150;
       const windowWidth = window.innerWidth;
@@ -151,7 +208,6 @@
       tooltipEl.style.scale = '1';
       tooltipEl.style.position = 'absolute';
       tooltipEl.style.left = `${left}px`;
-      tooltipEl.style.right = `${left}px`;
       tooltipEl.style.top = `${top}px`;
       tooltipEl.style.pointerEvents = 'none';
     }
@@ -162,9 +218,9 @@
       const isSmallScreen = window.innerWidth <= 430;
       const isMediumScreen = window.innerWidth > 430 && window.innerWidth <= 767;
 
-      chart.options.scales.x.ticks.padding = isSmallScreen ? 10 : isMediumScreen ? 23 : 40;
+      chart.options.scales.x.ticks.padding = isSmallScreen ? 8 : isMediumScreen ? 23 : 40;
       chart.data.datasets[0].pointRadius = isSmallScreen ? 2 : isMediumScreen ? 3 : 5;
-      chart.data.datasets[0].pointHoverRadius = isSmallScreen ? 3 : isMediumScreen ? 4 : 5;
+      chart.data.datasets[0].pointHoverRadius = isSmallScreen ? 3 : isMediumScreen ? 4 : 8;
 
       chart.resize();
       chart.update();
@@ -175,10 +231,7 @@
       updateChartOptions();
     });
     window.addEventListener('resize', updateChartOptions);
-
-
   </script>
-
 </body>
 
 </html>
