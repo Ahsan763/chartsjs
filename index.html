@@ -119,7 +119,7 @@
         },
         y: {
           display: false,
-          min: 0,
+          min: -1,
           max: 10,
         },
       },
@@ -219,7 +219,7 @@
       const isMediumScreen = window.innerWidth > 430 && window.innerWidth <= 767;
 
       chart.options.scales.x.ticks.padding = isSmallScreen ? 8 : isMediumScreen ? 23 : 40;
-      chart.data.datasets[0].pointRadius = isSmallScreen ? 4 : isMediumScreen ? 3 : 5;
+      // chart.data.datasets[0].pointRadius = isSmallScreen ? 4 : isMediumScreen ? 3 : 5;
       chart.data.datasets[0].pointHoverRadius = isSmallScreen ? 3 : isMediumScreen ? 4 : 8;
 
       chart.resize();
