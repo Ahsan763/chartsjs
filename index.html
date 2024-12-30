@@ -27,28 +27,28 @@
   </section>
   <script>
     // Vertical Line Plugin
-    const verticalLinePlugin = {
-      id: 'verticalLinePlugin',
-      afterDatasetsDraw(chart, args, options) {
-        if (!chart._active || !chart._active.length) return;
+    // const verticalLinePlugin = {
+    //   id: 'verticalLinePlugin',
+    //   afterDatasetsDraw(chart, args, options) {
+    //     if (!chart._active || !chart._active.length) return;
 
-        const ctx = chart.ctx;
-        const activePoint = chart._active[0];
-        const x = activePoint.element.x;
-        const topY = chart.scales.y.top;
-        const bottomY = chart.scales.y.bottom;
+    //     const ctx = chart.ctx;
+    //     const activePoint = chart._active[0];
+    //     const x = activePoint.element.x;
+    //     const topY = chart.scales.y.top;
+    //     const bottomY = chart.scales.y.bottom;
 
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over'; // Ensures the line is drawn below the points
-        ctx.beginPath();
-        ctx.moveTo(x, topY);
-        ctx.lineTo(x, bottomY);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#454b49';
-        ctx.stroke();
-        ctx.restore();
-      }
-    };
+    //     ctx.save();
+    //     ctx.globalCompositeOperation = 'destination-over'; // Ensures the line is drawn below the points
+    //     ctx.beginPath();
+    //     ctx.moveTo(x, topY);
+    //     ctx.lineTo(x, bottomY);
+    //     ctx.lineWidth = 2;
+    //     ctx.strokeStyle = '#454b49';
+    //     ctx.stroke();
+    //     ctx.restore();
+    //   }
+    // };
 
     // Label Plugin for "1000TWh"
     const labelPlugin = {
@@ -79,7 +79,7 @@
     };
 
     // Register the plugins
-    Chart.register(verticalLinePlugin, labelPlugin);
+    Chart.register(labelPlugin);
 
     // Define taglines for tooltips
     const taglines = {
