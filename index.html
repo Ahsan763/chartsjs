@@ -26,7 +26,6 @@
     </div>
   </section>
   <script>
-    // Vertical Line Plugin
     // const verticalLinePlugin = {
     //   id: 'verticalLinePlugin',
     //   afterDatasetsDraw(chart, args, options) {
@@ -49,8 +48,6 @@
     //     ctx.restore();
     //   }
     // };
-
-    // Label Plugin for "1000TWh"
     const labelPlugin = {
       id: 'labelPlugin',
       afterDatasetsDraw(chart) {
@@ -66,22 +63,19 @@
             const x = lastPoint.x;
             const y = lastPoint.y;
 
-            // Draw the label
             ctx.save();
             ctx.font = '13px Arial';
             ctx.fillStyle = 'cyan';
             ctx.textAlign = 'center';
-            ctx.fillText('1000TWh', x - 6, y - 10); // Adjust `y - 10` to position the label above the point
+            ctx.fillText('1000TWh', x - 6, y - 10);
             ctx.restore();
           }
         }
       }
     };
 
-    // Register the plugins
     Chart.register(labelPlugin);
 
-    // Define taglines for tooltips
     const taglines = {
       1950: 'Turing Test Coined.',
       1970: 'AI Winter halts development of AI after early boom',
@@ -91,7 +85,6 @@
       2030: 'Unknown breakthroughs to come.'
     };
 
-    // Chart.js configuration
     const ctx = document.getElementById('aiChart').getContext('2d');
     let chart;
     const chartOptions = {
@@ -126,12 +119,11 @@
         },
         y: {
           display: false,
-          min: 0, // Minimum value on the y-axis
-          max: 10, // Adjusted maximum value to ensure the label fits within the chart
+          min: 0,
+          max: 10,
         },
       },
     };
-
 
     function createChart() {
       chart = new Chart(ctx, {
@@ -145,7 +137,7 @@
               { x: 1990, y: 1.4 },
               { x: 2005, y: 3 },
               { x: 2022, y: 6.2 },
-              { x: 2030, y: 8 } // Ensure this is the last point
+              { x: 2030, y: 8 }
             ],
             borderColor: 'cyan',
             tension: 0.4,
@@ -190,8 +182,16 @@
       }
 
       const position = context.chart.canvas.getBoundingClientRect();
-      let left = position.left + window.pageXOffset + tooltipModel.caretX - 125;
-      let top = position.top + window.pageYOffset + tooltipModel.caretY - 190;
+      const isSmallScreen = window.innerWidth < 767;
+
+      let left, top;
+      if (isSmallScreen) {
+        left = position.left + window.pageXOffset + tooltipModel.caretX - 85;
+        top = position.top + window.pageYOffset + tooltipModel.caretY - 120;
+      } else {
+        left = position.left + window.pageXOffset + tooltipModel.caretX - 125;
+        top = position.top + window.pageYOffset + tooltipModel.caretY - 190;
+      }
 
       const tooltipWidth = 150;
       const windowWidth = window.innerWidth;
